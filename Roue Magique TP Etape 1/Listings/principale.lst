@@ -127,78 +127,187 @@ WEAK]
    21 00000000         ; IMPORT/EXPORT de procédure           
    22 00000000         
    23 00000000                 IMPORT           Init_Cible
-   24 00000000         
+   24 00000000                 IMPORT           Allume_LED
 
 
 
 ARM Macro Assembler    Page 3 
 
 
-   25 00000000         
-   26 00000000                 EXPORT           main
+   25 00000000                 IMPORT           Eteint_LED
+   26 00000000         
    27 00000000         
-   28 00000000         ;*******************************************************
-                       ************************
+   28 00000000                 EXPORT           main
    29 00000000         
-   30 00000000         
-   31 00000000         ;*******************************************************
+   30 00000000         ;*******************************************************
                        ************************
-   32 00000000                 AREA             mesdonnees, data, readwrite
-   33 00000000         
-   34 00000000         
+   31 00000000         
+   32 00000000         
+   33 00000000         ;*******************************************************
+                       ************************
+   34 00000000                 AREA             mesdonnees, data, readwrite
    35 00000000         
-   36 00000000         
-   37 00000000         ;*******************************************************
+   36 00000000 03 00   OldEtat DCW              3
+   37 00000002 00000005 
+                       Nb      EQU              5
+   38 00000002         
+   39 00000002         
+   40 00000002         ;*******************************************************
                        ************************
-   38 00000000         
-   39 00000000                 AREA             moncode, code, readonly
-   40 00000000         
-   41 00000000         
-   42 00000000         
-   43 00000000         ;*******************************************************
+   41 00000002         
+   42 00000002                 AREA             moncode, code, readonly
+   43 00000000         
+   44 00000000         
+   45 00000000         
+   46 00000000         ;*******************************************************
                        ************************
-   44 00000000         ; Procédure principale et point d'entrée du projet
-   45 00000000         ;*******************************************************
+   47 00000000         ; Procédure principale et point d'entrée du projet
+   48 00000000         ;*******************************************************
                        ************************
-   46 00000000         main    PROC
-   47 00000000         ;*******************************************************
+   49 00000000         main    PROC
+   50 00000000         ;*******************************************************
                        ************************
-   48 00000000         
-   49 00000000         
-   50 00000000 F04F 0000       MOV              R0,#0
-   51 00000004 F7FF FFFE       BL               Init_Cible  ;
-   52 00000008 4905            LDR              R1, =GPIOBASEB
-   53 0000000A         ; pour allumer la LED avec le registre 
-   54 0000000A         ;SET(PortB.Set)16= ?(0x01 << 10)
-   55 0000000A F44F 6280       MOV              R2, #(0x01 << 10)
-   56 0000000E 820A            STRH             R2, [R1,#OffsetSet]
-   57 00000010         
-   58 00000010         ; pour éteindre la LED avec le registre 
-   59 00000010         ; RESET(PortB.Reset)16= ?(0x01 << 10)
-   60 00000010 F44F 6280       MOV              R2, #(0x01 << 10)
-   61 00000014 828A            STRH             R2, [R1,#OffsetReset]
-   62 00000016         
-   63 00000016         ; pour allumer la led avec le registre output
-   64 00000016 898B            LDRH             R3, [R1,#OffsetOutput]
-   65 00000018         
-   66 00000018 EA43 0402       ORR              R4, R3, R2
-   67 0000001C 818C            STRH             R4, [R1 , #OffsetOutput]
-   68 0000001E         
-   69 0000001E E7FE    inf     B                inf         ; boucle inifinie t
-                                                            erminale...
-   70 00000020         
-   71 00000020         
-   72 00000020         
-   73 00000020         
-   74 00000020                 ENDP
-   75 00000020         
-   76 00000020                 END
+   51 00000000         
+   52 00000000         
+   53 00000000         
+   54 00000000         
+   55 00000000 F04F 0000       MOV              R0,#0
+   56 00000004 F7FF FFFE       BL               Init_Cible  ;
+   57 00000008         
+   58 00000008         ; pour allumer la led avec le registre output
+   59 00000008         ;LDRH R3, [R1,#OffsetOutput]
+   60 00000008         
+   61 00000008         ;ORR R4, R3, R2
+   62 00000008         ;STRH  R4, [R1 , #OffsetOutput]
+   63 00000008         
+   64 00000008         ; pour éteindre la led avec output
+   65 00000008         ;LDRH R3, [R1,#OffsetOutput]
+   66 00000008         
+   67 00000008         ;MVN R6, R2
+   68 00000008         ;AND R4, R3, R6
+   69 00000008         ;STRH  R4, [R1 , #OffsetOutput]
+   70 00000008         
+   71 00000008         
+   72 00000008         ;*******************************************************
+                       ***
+   73 00000008         ;Détection front montant
+   74 00000008         ;*******************************************************
+                       ***
 
 
 
 ARM Macro Assembler    Page 4 
 
 
+   75 00000008         
+   76 00000008         
+   77 00000008 4E14            LDR              R6, = OldEtat
+   78 0000000A         ;LDRSH R3, [R0]
+   79 0000000A         ;LDR R0, =Nb
+   80 0000000A         ;LDRSH R11, [R0]
+   81 0000000A F04F 0B05       MOV              R11, #Nb
+   82 0000000E         
+   83 0000000E 4814            LDR              R0, =GPIOBASEA
+   84 00000010 8903            LDRH             R3, [R0, #OffsetInput] ;R3 repr
+                                                            ésente OldEtat
+   85 00000012 F403 7380       AND              R3, #(0x1<<8)
+   86 00000016 8033            STRH             R3, [R6]
+   87 00000018         
+   88 00000018         
+   89 00000018 F04F 0A00       MOV              R10, #0     ;R10 représente le 
+                                                            nombre de tours act
+                                                            uels
+   90 0000001C         
+   91 0000001C 4810    inf     LDR              R0, =GPIOBASEA
+   92 0000001E 8907            LDRH             R7, [R0, #OffsetInput] ;R7 repr
+                                                            ésente l'état actue
+                                                            l du capteur
+   93 00000020         
+   94 00000020 4810            LDR              R0, =GPIOBASEB
+   95 00000022 F8B0 800C       LDRH             R8, [R0, #OffsetOutput] ;R8 rep
+                                                            résente l'état de l
+                                                            a LED
+   96 00000026         
+   97 00000026         
+   98 00000026 F9B6 3000 
+                       Si      LDRSH            R3, [R6]
+   99 0000002A         ;AND R7, #(0x1<<8)
+  100 0000002A         
+  101 0000002A         ;SUBS R9, R7, R3
+  102 0000002A 429F            CMP              R7,R3
+  103 0000002C D00E            BEQ              Sortie      ;Si R7 et R3 sont é
+                                                            gales
+  104 0000002E         
+  105 0000002E F417 7F80 
+                       Oui     TST              R7, #(0x1 << 8) ;Si capteur = 1
+                                                            
+  106 00000032 D00B            BEQ              Sortie      ;Cas d'un front des
+                                                            cendant
+  107 00000034         
+  108 00000034 F418 6F80 
+                       T_Oui   TST              R8, #(0x1 <<10)
+  109 00000038 D004            BEQ              Eteinte     ;La LED est eteinte
+                                                            
+  110 0000003A         
+  111 0000003A F7FF FFFE 
+                       Allume  BL               Eteint_LED
+  112 0000003E F10A 0A01       ADD              R10, #1
+  113 00000042 E003            B                Sortie
+  114 00000044         
+  115 00000044 F7FF FFFE 
+                       Eteinte BL               Allume_LED
+  116 00000048 F10A 0A01       ADD              R10, #1
+  117 0000004C         
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+  118 0000004C         
+  119 0000004C         
+  120 0000004C         Sortie                               ; Créer une variabl
+                                                            e qui mémorise l'ét
+                                                            at précédent et qu'
+                                                            on compare à l'état
+                                                             actuel
+  121 0000004C 8037            STRH             R7, [R6]
+  122 0000004E         
+  123 0000004E 45D3            CMP              R11, R10
+  124 00000050 D102            BNE              Suite
+  125 00000052 F7FF FFFE       BL               Allume_LED
+  126 00000056         
+  127 00000056         
+  128 00000056         
+  129 00000056 D000            BEQ              infini      ;Quand on a fait N 
+                                                            tours
+  130 00000058         
+  131 00000058 E7E0    Suite   B                inf
+  132 0000005A         
+  133 0000005A E7FE    infini  B                infini
+  134 0000005C         
+  135 0000005C         
+  136 0000005C         ;inf  LDR R0, =GPIOBASEA
+  137 0000005C         ;  LDRH R0, [R0,#OffsetInput]
+  138 0000005C         
+  139 0000005C         ;Si  TST R0, #(0x1 << 8)
+  140 0000005C         ;  BEQ T_Non
+  141 0000005C         
+  142 0000005C         ;T_Oui BL Allume_LED
+  143 0000005C         ;  B Sortie
+  144 0000005C         
+  145 0000005C         ;T_Non BL Eteint_LED
+  146 0000005C         
+  147 0000005C         ;Sortie B inf    ; boucle inifinie terminale...
+  148 0000005C         
+  149 0000005C         
+  150 0000005C         
+  151 0000005C         
+  152 0000005C                 ENDP
+  153 0000005C         
+  154 0000005C                 END
+              00000000 
+              40010800 
               40010C00 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=.\objects\principale.d -o.\objects\principale.o -I.\RTE\Device\STM
@@ -214,46 +323,127 @@ D SETA 1" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_MD SETA 1" --list=.
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Relocatable symbols
 
+OldEtat 00000000
+
+Symbol: OldEtat
+   Definitions
+      At line 36 in file Principale.asm
+   Uses
+      At line 77 in file Principale.asm
+Comment: OldEtat used once
 mesdonnees 00000000
 
 Symbol: mesdonnees
    Definitions
-      At line 32 in file Principale.asm
+      At line 34 in file Principale.asm
    Uses
       None
 Comment: mesdonnees unused
-1 symbol
+2 symbols
 
 
 
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Relocatable symbols
 
-inf 0000001E
+Allume 0000003A
+
+Symbol: Allume
+   Definitions
+      At line 111 in file Principale.asm
+   Uses
+      None
+Comment: Allume unused
+Eteinte 00000044
+
+Symbol: Eteinte
+   Definitions
+      At line 115 in file Principale.asm
+   Uses
+      At line 109 in file Principale.asm
+Comment: Eteinte used once
+Oui 0000002E
+
+Symbol: Oui
+   Definitions
+      At line 105 in file Principale.asm
+   Uses
+      None
+Comment: Oui unused
+Si 00000026
+
+Symbol: Si
+   Definitions
+      At line 98 in file Principale.asm
+   Uses
+      None
+Comment: Si unused
+Sortie 0000004C
+
+Symbol: Sortie
+   Definitions
+      At line 120 in file Principale.asm
+   Uses
+      At line 103 in file Principale.asm
+      At line 106 in file Principale.asm
+      At line 113 in file Principale.asm
+
+Suite 00000058
+
+Symbol: Suite
+   Definitions
+      At line 131 in file Principale.asm
+   Uses
+      At line 124 in file Principale.asm
+Comment: Suite used once
+T_Oui 00000034
+
+Symbol: T_Oui
+   Definitions
+      At line 108 in file Principale.asm
+   Uses
+      None
+Comment: T_Oui unused
+inf 0000001C
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
 
 Symbol: inf
    Definitions
-      At line 69 in file Principale.asm
+      At line 91 in file Principale.asm
    Uses
-      At line 69 in file Principale.asm
+      At line 131 in file Principale.asm
 Comment: inf used once
+infini 0000005A
+
+Symbol: infini
+   Definitions
+      At line 133 in file Principale.asm
+   Uses
+      At line 129 in file Principale.asm
+      At line 133 in file Principale.asm
+
 main 00000000
 
 Symbol: main
    Definitions
-      At line 46 in file Principale.asm
+      At line 49 in file Principale.asm
    Uses
-      At line 26 in file Principale.asm
+      At line 28 in file Principale.asm
 Comment: main used once
 moncode 00000000
 
 Symbol: moncode
    Definitions
-      At line 39 in file Principale.asm
+      At line 42 in file Principale.asm
    Uses
       None
 Comment: moncode unused
-3 symbols
+11 symbols
 
 
 
@@ -266,15 +456,16 @@ Symbol: GPIOBASEA
    Definitions
       At line 24 in file REG_UTILES.inc
    Uses
-      None
-Comment: GPIOBASEA unused
+      At line 83 in file Principale.asm
+      At line 91 in file Principale.asm
+
 GPIOBASEB 40010C00
 
 Symbol: GPIOBASEB
    Definitions
       At line 25 in file REG_UTILES.inc
    Uses
-      At line 52 in file Principale.asm
+      At line 94 in file Principale.asm
 Comment: GPIOBASEB used once
 MaskBlank 00000004
 
@@ -318,13 +509,13 @@ Symbol: MaskSerial_Dots
 Comment: MaskSerial_Dots unused
 MaskSerial_In1 00000080
 
-Symbol: MaskSerial_In1
 
 
 
 ARM Macro Assembler    Page 2 Alphabetic symbol ordering
 Absolute symbols
 
+Symbol: MaskSerial_In1
    Definitions
       At line 33 in file REG_UTILES.inc
    Uses
@@ -346,50 +537,58 @@ Symbol: MaskXlat
    Uses
       None
 Comment: MaskXlat unused
+Nb 00000005
+
+Symbol: Nb
+   Definitions
+      At line 37 in file Principale.asm
+   Uses
+      At line 81 in file Principale.asm
+Comment: Nb used once
 OffsetInput 00000008
 
 Symbol: OffsetInput
    Definitions
       At line 27 in file REG_UTILES.inc
    Uses
-      None
-Comment: OffsetInput unused
+      At line 84 in file Principale.asm
+      At line 92 in file Principale.asm
+
 OffsetOutput 0000000C
 
 Symbol: OffsetOutput
    Definitions
       At line 28 in file REG_UTILES.inc
    Uses
-      At line 64 in file Principale.asm
-      At line 67 in file Principale.asm
-
+      At line 95 in file Principale.asm
+Comment: OffsetOutput used once
 OffsetReset 00000014
 
 Symbol: OffsetReset
    Definitions
       At line 30 in file REG_UTILES.inc
    Uses
-      At line 61 in file Principale.asm
-Comment: OffsetReset used once
+      None
+Comment: OffsetReset unused
 OffsetSet 00000010
 
 Symbol: OffsetSet
    Definitions
-      At line 29 in file REG_UTILES.inc
-   Uses
-      At line 56 in file Principale.asm
-Comment: OffsetSet used once
-SCB_VTOR E000ED08
-
-Symbol: SCB_VTOR
-   Definitions
-      At line 43 in file REG_UTILES.inc
 
 
 
 ARM Macro Assembler    Page 3 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 29 in file REG_UTILES.inc
+   Uses
+      None
+Comment: OffsetSet unused
+SCB_VTOR E000ED08
+
+Symbol: SCB_VTOR
+   Definitions
+      At line 43 in file REG_UTILES.inc
    Uses
       None
 Comment: SCB_VTOR unused
@@ -425,20 +624,37 @@ Symbol: TIM4_SR
    Uses
       None
 Comment: TIM4_SR unused
-19 symbols
+20 symbols
 
 
 
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 External symbols
 
+Allume_LED 00000000
+
+Symbol: Allume_LED
+   Definitions
+      At line 24 in file Principale.asm
+   Uses
+      At line 115 in file Principale.asm
+      At line 125 in file Principale.asm
+
+Eteint_LED 00000000
+
+Symbol: Eteint_LED
+   Definitions
+      At line 25 in file Principale.asm
+   Uses
+      At line 111 in file Principale.asm
+Comment: Eteint_LED used once
 Init_Cible 00000000
 
 Symbol: Init_Cible
    Definitions
       At line 23 in file Principale.asm
    Uses
-      At line 51 in file Principale.asm
+      At line 56 in file Principale.asm
 Comment: Init_Cible used once
 |Lib$$Request$$armlib| 00000000
 
@@ -448,5 +664,5 @@ Symbol: |Lib$$Request$$armlib|
    Uses
       None
 Comment: |Lib$$Request$$armlib| unused
-2 symbols
-362 symbols in table
+4 symbols
+374 symbols in table

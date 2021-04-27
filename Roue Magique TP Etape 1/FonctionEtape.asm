@@ -4,14 +4,13 @@
 	PRESERVE8
 
 ;**************************************************************************
-;  Fichier Vierge.asm
-; Auteur : V.MAHOUT
-; Date :  12/11/2013
+
 ;**************************************************************************
 
 ;***************IMPORT/EXPORT**********************************************
 
-
+		EXPORT Allume_LED
+		EXPORT Eteint_LED
 
 ;**************************************************************************
 
@@ -38,7 +37,27 @@
    	AREA  moncode, code, readonly
 ;**************************************************************************
 
+Allume_LED PROC
+		PUSH {R1,R2}
+		; pour allumer la LED avec le registre 
+		LDR R1, =GPIOBASEB
+		MOV R2, #(0x01 << 10)
+		STRH R2, [R1,#OffsetSet]
+		POP {R1,R2}
+		BX LR ;Pour sortir de la fonction 
+		
+		ENDP
 
+
+Eteint_LED PROC
+		PUSH {R1,R2}
+		LDR R1, =GPIOBASEB
+		MOV R2, #(0x01 << 10)
+		STRH R2, [R1,#OffsetReset]
+		POP {R1,R2}
+		BX LR
+		
+		ENDP
 
 
 

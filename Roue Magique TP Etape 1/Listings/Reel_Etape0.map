@@ -5,6 +5,8 @@ Component: ARM Compiler 5.06 update 6 (build 750) Tool: armlink [4d35ed]
 Section Cross References
 
     principale.o(moncode) refers to initialisation.o(i.Init_Cible) for Init_Cible
+    principale.o(moncode) refers to fonctionetape.o(moncode) for Eteint_LED
+    principale.o(moncode) refers to principale.o(mesdonnees) for OldEtat
     startup_stm32f10x_cl.o(RESET) refers to startup_stm32f10x_cl.o(STACK) for __initial_sp
     startup_stm32f10x_cl.o(RESET) refers to startup_stm32f10x_cl.o(.text) for Reset_Handler
     startup_stm32f10x_cl.o(RESET) refers to timer_systick_1.o(i.SysTick_Handler) for SysTick_Handler
@@ -116,9 +118,7 @@ Section Cross References
 
 Removing Unused input sections from the image.
 
-    Removing principale.o(mesdonnees), (0 bytes).
     Removing fonctionetape.o(MesDonnees), (0 bytes).
-    Removing fonctionetape.o(moncode), (0 bytes).
     Removing startup_stm32f10x_cl.o(HEAP), (512 bytes).
     Removing system_stm32f10x_1.o(.rev16_text), (4 bytes).
     Removing system_stm32f10x_1.o(.revsh_text), (4 bytes).
@@ -153,7 +153,7 @@ Removing Unused input sections from the image.
     Removing timer_systick_1.o(.revsh_text), (4 bytes).
     Removing timer_systick_1.o(.rrx_text), (6 bytes).
 
-36 unused section(s) (total 1312 bytes) removed from the image.
+34 unused section(s) (total 1312 bytes) removed from the image.
 
 ==============================================================================
 
@@ -165,16 +165,16 @@ Image Symbol Table
 
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry2.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry2.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10b.o ABSOLUTE
     ../clib/microlib/longlong.c              0x00000000   Number         0  llushr.o ABSOLUTE
     ../clib/microlib/longlong.c              0x00000000   Number         0  llshl.o ABSOLUTE
@@ -264,8 +264,9 @@ Image Symbol Table
     i.__scatterload_copy                     0x080012ac   Section       14  handlers.o(i.__scatterload_copy)
     i.__scatterload_null                     0x080012ba   Section        2  handlers.o(i.__scatterload_null)
     i.__scatterload_zeroinit                 0x080012bc   Section       14  handlers.o(i.__scatterload_zeroinit)
-    moncode                                  0x080012cc   Section       10  principale.o(moncode)
-    moncode                                  0x080012d8   Section      200  foncasm.o(moncode)
+    moncode                                  0x080012cc   Section      104  principale.o(moncode)
+    moncode                                  0x08001334   Section       32  fonctionetape.o(moncode)
+    moncode                                  0x08001354   Section      200  foncasm.o(moncode)
     .data                                    0x20000000   Section       19  initialisation.o(.data)
     .data                                    0x20000014   Section       24  fonctiontimer.o(.data)
     incre                                    0x20000024   Data           4  fonctiontimer.o(.data)
@@ -273,7 +274,9 @@ Image Symbol Table
     .data                                    0x2000002c   Section       96  warning.o(.data)
     .data                                    0x2000008c   Section        4  timer_systick_1.o(.data)
     Ptr_Systick                              0x2000008c   Data           4  timer_systick_1.o(.data)
-    STACK                                    0x20000090   Section     1024  startup_stm32f10x_cl.o(STACK)
+    mesdonnees                               0x20000090   Section        2  principale.o(mesdonnees)
+    OldEtat                                  0x20000090   Data           2  principale.o(mesdonnees)
+    STACK                                    0x20000098   Section     1024  startup_stm32f10x_cl.o(STACK)
 
     Global Symbols
 
@@ -407,11 +410,13 @@ Image Symbol Table
     __scatterload_copy                       0x080012ad   Thumb Code    14  handlers.o(i.__scatterload_copy)
     __scatterload_null                       0x080012bb   Thumb Code     2  handlers.o(i.__scatterload_null)
     __scatterload_zeroinit                   0x080012bd   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    main                                     0x080012cd   Thumb Code    10  principale.o(moncode)
-    Envoie192Boucle                          0x080012d9   Thumb Code   108  foncasm.o(moncode)
-    Envoie96Dot                              0x08001345   Thumb Code    78  foncasm.o(moncode)
-    Region$$Table$$Base                      0x080013a0   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x080013c0   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x080012cd   Thumb Code    92  principale.o(moncode)
+    Allume_LED                               0x08001335   Thumb Code    14  fonctionetape.o(moncode)
+    Eteint_LED                               0x08001343   Thumb Code    14  fonctionetape.o(moncode)
+    Envoie192Boucle                          0x08001355   Thumb Code   108  foncasm.o(moncode)
+    Envoie96Dot                              0x080013c1   Thumb Code    78  foncasm.o(moncode)
+    Region$$Table$$Base                      0x0800141c   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x0800143c   Number         0  anon$$obj.o(Region$$Table)
     PrtSurImage                              0x20000000   Data           4  initialisation.o(.data)
     BarretEnCours                            0x20000004   Data           4  initialisation.o(.data)
     DataSend                                 0x20000008   Data           1  initialisation.o(.data)
@@ -422,7 +427,7 @@ Image Symbol Table
     ImageEnCours                             0x2000001c   Data           4  fonctiontimer.o(.data)
     increment                                0x20000020   Data           4  fonctiontimer.o(.data)
     warning                                  0x2000002c   Data          96  warning.o(.data)
-    __initial_sp                             0x20000490   Data           0  startup_stm32f10x_cl.o(STACK)
+    __initial_sp                             0x20000498   Data           0  startup_stm32f10x_cl.o(STACK)
 
 
 
@@ -432,83 +437,85 @@ Memory Map of the image
 
   Image Entry point : 0x08000151
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00001450, Max: 0x00040000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000014d0, Max: 0x00040000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000013c0, Max: 0x00040000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x0000143c, Max: 0x00040000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x08000000   0x08000000   0x00000150   Data   RO           12    RESET               startup_stm32f10x_cl.o
-    0x08000150   0x08000150   0x00000000   Code   RO          439  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
-    0x08000150   0x08000150   0x00000004   Code   RO          462    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
-    0x08000154   0x08000154   0x00000004   Code   RO          465    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
-    0x08000158   0x08000158   0x00000000   Code   RO          467    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
-    0x08000158   0x08000158   0x00000000   Code   RO          469    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
-    0x08000158   0x08000158   0x00000008   Code   RO          470    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
-    0x08000160   0x08000160   0x00000000   Code   RO          472    .ARM.Collect$$$$0000000D  mc_w.l(entry10a.o)
-    0x08000160   0x08000160   0x00000000   Code   RO          474    .ARM.Collect$$$$0000000F  mc_w.l(entry11a.o)
-    0x08000160   0x08000160   0x00000004   Code   RO          463    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
-    0x08000164   0x08000164   0x00000024   Code   RO           13    .text               startup_stm32f10x_cl.o
-    0x08000188   0x08000188   0x00000064   Code   RO          442    .text               mf_w.l(fmul.o)
-    0x080001ec   0x080001ec   0x0000007c   Code   RO          444    .text               mf_w.l(fdiv.o)
-    0x08000268   0x08000268   0x000000e4   Code   RO          446    .text               mf_w.l(dmul.o)
-    0x0800034c   0x0800034c   0x000000de   Code   RO          448    .text               mf_w.l(ddiv.o)
-    0x0800042a   0x0800042a   0x0000000a   Code   RO          450    .text               mf_w.l(ffltui.o)
-    0x08000434   0x08000434   0x00000028   Code   RO          452    .text               mf_w.l(ffixui.o)
-    0x0800045c   0x0800045c   0x00000026   Code   RO          454    .text               mf_w.l(f2d.o)
+    0x08000000   0x08000000   0x00000150   Data   RO           15    RESET               startup_stm32f10x_cl.o
+    0x08000150   0x08000150   0x00000000   Code   RO          442  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
+    0x08000150   0x08000150   0x00000004   Code   RO          465    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
+    0x08000154   0x08000154   0x00000004   Code   RO          468    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
+    0x08000158   0x08000158   0x00000000   Code   RO          470    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
+    0x08000158   0x08000158   0x00000000   Code   RO          472    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
+    0x08000158   0x08000158   0x00000008   Code   RO          473    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
+    0x08000160   0x08000160   0x00000000   Code   RO          475    .ARM.Collect$$$$0000000D  mc_w.l(entry10a.o)
+    0x08000160   0x08000160   0x00000000   Code   RO          477    .ARM.Collect$$$$0000000F  mc_w.l(entry11a.o)
+    0x08000160   0x08000160   0x00000004   Code   RO          466    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
+    0x08000164   0x08000164   0x00000024   Code   RO           16    .text               startup_stm32f10x_cl.o
+    0x08000188   0x08000188   0x00000064   Code   RO          445    .text               mf_w.l(fmul.o)
+    0x080001ec   0x080001ec   0x0000007c   Code   RO          447    .text               mf_w.l(fdiv.o)
+    0x08000268   0x08000268   0x000000e4   Code   RO          449    .text               mf_w.l(dmul.o)
+    0x0800034c   0x0800034c   0x000000de   Code   RO          451    .text               mf_w.l(ddiv.o)
+    0x0800042a   0x0800042a   0x0000000a   Code   RO          453    .text               mf_w.l(ffltui.o)
+    0x08000434   0x08000434   0x00000028   Code   RO          455    .text               mf_w.l(ffixui.o)
+    0x0800045c   0x0800045c   0x00000026   Code   RO          457    .text               mf_w.l(f2d.o)
     0x08000482   0x08000482   0x00000002   PAD
-    0x08000484   0x08000484   0x00000030   Code   RO          456    .text               mf_w.l(cdcmple.o)
-    0x080004b4   0x080004b4   0x00000030   Code   RO          458    .text               mf_w.l(cdrcmple.o)
-    0x080004e4   0x080004e4   0x00000038   Code   RO          460    .text               mf_w.l(d2f.o)
-    0x0800051c   0x0800051c   0x00000000   Code   RO          476    .text               mc_w.l(iusefp.o)
-    0x0800051c   0x0800051c   0x0000006e   Code   RO          477    .text               mf_w.l(fepilogue.o)
-    0x0800058a   0x0800058a   0x000000ba   Code   RO          479    .text               mf_w.l(depilogue.o)
-    0x08000644   0x08000644   0x00000024   Code   RO          481    .text               mc_w.l(init.o)
-    0x08000668   0x08000668   0x0000001e   Code   RO          483    .text               mc_w.l(llshl.o)
-    0x08000686   0x08000686   0x00000020   Code   RO          485    .text               mc_w.l(llushr.o)
+    0x08000484   0x08000484   0x00000030   Code   RO          459    .text               mf_w.l(cdcmple.o)
+    0x080004b4   0x080004b4   0x00000030   Code   RO          461    .text               mf_w.l(cdrcmple.o)
+    0x080004e4   0x080004e4   0x00000038   Code   RO          463    .text               mf_w.l(d2f.o)
+    0x0800051c   0x0800051c   0x00000000   Code   RO          479    .text               mc_w.l(iusefp.o)
+    0x0800051c   0x0800051c   0x0000006e   Code   RO          480    .text               mf_w.l(fepilogue.o)
+    0x0800058a   0x0800058a   0x000000ba   Code   RO          482    .text               mf_w.l(depilogue.o)
+    0x08000644   0x08000644   0x00000024   Code   RO          484    .text               mc_w.l(init.o)
+    0x08000668   0x08000668   0x0000001e   Code   RO          486    .text               mc_w.l(llshl.o)
+    0x08000686   0x08000686   0x00000020   Code   RO          488    .text               mc_w.l(llushr.o)
     0x080006a6   0x080006a6   0x00000002   PAD
-    0x080006a8   0x080006a8   0x00000028   Code   RO          215    i.Anim              Matos.lib(fonctiontimer.o)
-    0x080006d0   0x080006d0   0x0000014c   Code   RO          338    i.GPIO_Configure    Matos.lib(pilote_io_1.o)
-    0x0800081c   0x0800081c   0x0000010c   Code   RO           89    i.Init_Cible        Matos.lib(initialisation.o)
-    0x08000928   0x08000928   0x00000078   Code   RO           90    i.Init_Dot          Matos.lib(initialisation.o)
-    0x080009a0   0x080009a0   0x00000090   Code   RO           91    i.Init_Port         Matos.lib(initialisation.o)
-    0x08000a30   0x08000a30   0x0000016c   Code   RO           93    i.Init_Timer1       Matos.lib(initialisation.o)
-    0x08000b9c   0x08000b9c   0x0000011c   Code   RO           94    i.Init_Timer2_PWM   Matos.lib(initialisation.o)
-    0x08000cb8   0x08000cb8   0x00000070   Code   RO           95    i.Init_Timer3_Slave  Matos.lib(initialisation.o)
-    0x08000d28   0x08000d28   0x00000074   Code   RO           96    i.Init_Timer4       Matos.lib(initialisation.o)
-    0x08000d9c   0x08000d9c   0x00000010   Code   RO          344    i.Port_IO_Reset     Matos.lib(pilote_io_1.o)
-    0x08000dac   0x08000dac   0x00000010   Code   RO          345    i.Port_IO_Set       Matos.lib(pilote_io_1.o)
-    0x08000dbc   0x08000dbc   0x00000008   Code   RO           20    i.SetSysClock       system_stm32f10x_1.o
-    0x08000dc4   0x08000dc4   0x00000118   Code   RO           21    i.SetSysClockTo72   system_stm32f10x_1.o
-    0x08000edc   0x08000edc   0x00000010   Code   RO          404    i.SysTick_Handler   Matos.lib(timer_systick_1.o)
-    0x08000eec   0x08000eec   0x0000006c   Code   RO           23    i.SystemInit        system_stm32f10x_1.o
-    0x08000f58   0x08000f58   0x00000110   Code   RO          405    i.Systick_Period    Matos.lib(timer_systick_1.o)
-    0x08001068   0x08001068   0x00000024   Code   RO          406    i.Systick_Prio_IT   Matos.lib(timer_systick_1.o)
-    0x0800108c   0x0800108c   0x000000b4   Code   RO          224    i.TIM1_CC_IRQHandler  Matos.lib(fonctiontimer.o)
-    0x08001140   0x08001140   0x000000ac   Code   RO          225    i.TIM1_UP_IRQHandler  Matos.lib(fonctiontimer.o)
-    0x080011ec   0x080011ec   0x00000004   Code   RO          226    i.TIM2_IRQHandler   Matos.lib(fonctiontimer.o)
-    0x080011f0   0x080011f0   0x00000050   Code   RO          227    i.TIM3_IRQHandler   Matos.lib(fonctiontimer.o)
-    0x08001240   0x08001240   0x0000006c   Code   RO          228    i.TIM4_IRQHandler   Matos.lib(fonctiontimer.o)
-    0x080012ac   0x080012ac   0x0000000e   Code   RO          489    i.__scatterload_copy  mc_w.l(handlers.o)
-    0x080012ba   0x080012ba   0x00000002   Code   RO          490    i.__scatterload_null  mc_w.l(handlers.o)
-    0x080012bc   0x080012bc   0x0000000e   Code   RO          491    i.__scatterload_zeroinit  mc_w.l(handlers.o)
+    0x080006a8   0x080006a8   0x00000028   Code   RO          218    i.Anim              Matos.lib(fonctiontimer.o)
+    0x080006d0   0x080006d0   0x0000014c   Code   RO          341    i.GPIO_Configure    Matos.lib(pilote_io_1.o)
+    0x0800081c   0x0800081c   0x0000010c   Code   RO           92    i.Init_Cible        Matos.lib(initialisation.o)
+    0x08000928   0x08000928   0x00000078   Code   RO           93    i.Init_Dot          Matos.lib(initialisation.o)
+    0x080009a0   0x080009a0   0x00000090   Code   RO           94    i.Init_Port         Matos.lib(initialisation.o)
+    0x08000a30   0x08000a30   0x0000016c   Code   RO           96    i.Init_Timer1       Matos.lib(initialisation.o)
+    0x08000b9c   0x08000b9c   0x0000011c   Code   RO           97    i.Init_Timer2_PWM   Matos.lib(initialisation.o)
+    0x08000cb8   0x08000cb8   0x00000070   Code   RO           98    i.Init_Timer3_Slave  Matos.lib(initialisation.o)
+    0x08000d28   0x08000d28   0x00000074   Code   RO           99    i.Init_Timer4       Matos.lib(initialisation.o)
+    0x08000d9c   0x08000d9c   0x00000010   Code   RO          347    i.Port_IO_Reset     Matos.lib(pilote_io_1.o)
+    0x08000dac   0x08000dac   0x00000010   Code   RO          348    i.Port_IO_Set       Matos.lib(pilote_io_1.o)
+    0x08000dbc   0x08000dbc   0x00000008   Code   RO           23    i.SetSysClock       system_stm32f10x_1.o
+    0x08000dc4   0x08000dc4   0x00000118   Code   RO           24    i.SetSysClockTo72   system_stm32f10x_1.o
+    0x08000edc   0x08000edc   0x00000010   Code   RO          407    i.SysTick_Handler   Matos.lib(timer_systick_1.o)
+    0x08000eec   0x08000eec   0x0000006c   Code   RO           26    i.SystemInit        system_stm32f10x_1.o
+    0x08000f58   0x08000f58   0x00000110   Code   RO          408    i.Systick_Period    Matos.lib(timer_systick_1.o)
+    0x08001068   0x08001068   0x00000024   Code   RO          409    i.Systick_Prio_IT   Matos.lib(timer_systick_1.o)
+    0x0800108c   0x0800108c   0x000000b4   Code   RO          227    i.TIM1_CC_IRQHandler  Matos.lib(fonctiontimer.o)
+    0x08001140   0x08001140   0x000000ac   Code   RO          228    i.TIM1_UP_IRQHandler  Matos.lib(fonctiontimer.o)
+    0x080011ec   0x080011ec   0x00000004   Code   RO          229    i.TIM2_IRQHandler   Matos.lib(fonctiontimer.o)
+    0x080011f0   0x080011f0   0x00000050   Code   RO          230    i.TIM3_IRQHandler   Matos.lib(fonctiontimer.o)
+    0x08001240   0x08001240   0x0000006c   Code   RO          231    i.TIM4_IRQHandler   Matos.lib(fonctiontimer.o)
+    0x080012ac   0x080012ac   0x0000000e   Code   RO          492    i.__scatterload_copy  mc_w.l(handlers.o)
+    0x080012ba   0x080012ba   0x00000002   Code   RO          493    i.__scatterload_null  mc_w.l(handlers.o)
+    0x080012bc   0x080012bc   0x0000000e   Code   RO          494    i.__scatterload_zeroinit  mc_w.l(handlers.o)
     0x080012ca   0x080012ca   0x00000002   PAD
-    0x080012cc   0x080012cc   0x0000000a   Code   RO            2    moncode             principale.o
-    0x080012d6   0x080012d6   0x00000002   PAD
-    0x080012d8   0x080012d8   0x000000c8   Code   RO          331    moncode             Matos.lib(foncasm.o)
-    0x080013a0   0x080013a0   0x00000020   Data   RO          487    Region$$Table       anon$$obj.o
+    0x080012cc   0x080012cc   0x00000068   Code   RO            2    moncode             principale.o
+    0x08001334   0x08001334   0x00000020   Code   RO            9    moncode             fonctionetape.o
+    0x08001354   0x08001354   0x000000c8   Code   RO          334    moncode             Matos.lib(foncasm.o)
+    0x0800141c   0x0800141c   0x00000020   Data   RO          490    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080013c0, Size: 0x00000490, Max: 0x00010000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x0800143c, Size: 0x00000498, Max: 0x00010000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x080013c0   0x00000013   Data   RW           97    .data               Matos.lib(initialisation.o)
-    0x20000013   0x080013d3   0x00000001   PAD
-    0x20000014   0x080013d4   0x00000018   Data   RW          229    .data               Matos.lib(fonctiontimer.o)
-    0x2000002c   0x080013ec   0x00000060   Data   RW          321    .data               Matos.lib(warning.o)
-    0x2000008c   0x0800144c   0x00000004   Data   RW          407    .data               Matos.lib(timer_systick_1.o)
-    0x20000090        -       0x00000400   Zero   RW           10    STACK               startup_stm32f10x_cl.o
+    0x20000000   0x0800143c   0x00000013   Data   RW          100    .data               Matos.lib(initialisation.o)
+    0x20000013   0x0800144f   0x00000001   PAD
+    0x20000014   0x08001450   0x00000018   Data   RW          232    .data               Matos.lib(fonctiontimer.o)
+    0x2000002c   0x08001468   0x00000060   Data   RW          324    .data               Matos.lib(warning.o)
+    0x2000008c   0x080014c8   0x00000004   Data   RW          410    .data               Matos.lib(timer_systick_1.o)
+    0x20000090   0x080014cc   0x00000002   Data   RW            1    mesdonnees          principale.o
+    0x20000092   0x080014ce   0x00000006   PAD
+    0x20000098        -       0x00000400   Zero   RW           13    STACK               startup_stm32f10x_cl.o
 
 
 ==============================================================================
@@ -518,14 +525,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-        10          0          0          0          0        356   principale.o
-        36          8        336          0       1024        824   startup_stm32f10x_cl.o
-       396         32          0          0          0       6577   system_stm32f10x_1.o
+        32          4          0          0          0        388   fonctionetape.o
+       104         12          0          2          0        392   principale.o
+        36          8        336          0       1024        864   startup_stm32f10x_cl.o
+       396         32          0          0          0       6601   system_stm32f10x_1.o
 
     ----------------------------------------------------------------------
-       444         40        368          0       1024       7757   Object Totals
+       568         56        368          4       1028       8245   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-         2          0          0          0          0          0   (incl. Padding)
+         0          0          0          2          4          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -585,15 +593,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      4688        382        368        144       1024     245376   Grand Totals
-      4688        382        368        144       1024     245376   ELF Image Totals
-      4688        382        368        144          0          0   ROM Totals
+      4812        398        368        148       1028     245812   Grand Totals
+      4812        398        368        148       1028     245812   ELF Image Totals
+      4812        398        368        148          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 5056 (   4.94kB)
-    Total RW  Size (RW Data + ZI Data)              1168 (   1.14kB)
-    Total ROM Size (Code + RO Data + RW Data)       5200 (   5.08kB)
+    Total RO  Size (Code + RO Data)                 5180 (   5.06kB)
+    Total RW  Size (RW Data + ZI Data)              1176 (   1.15kB)
+    Total ROM Size (Code + RO Data + RW Data)       5328 (   5.20kB)
 
 ==============================================================================
 
