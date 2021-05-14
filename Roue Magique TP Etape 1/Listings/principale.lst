@@ -311,12 +311,12 @@ ARM Macro Assembler    Page 5
               40010C00 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=.\objects\principale.d -o.\objects\principale.o -I.\RTE\Device\STM
-32F103RB -I.\RTE\_Simul_ -IC:\Programdata\Keil\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\
-Core\Include -IC:\Programdata\Keil\Arm\Packs\Keil\STM32F1xx_DFP\2.3.0\Device\In
-clude --predefine="__EVAL SETA 1" --predefine="__MICROLIB SETA 1" --predefine="
-__UVISION_VERSION SETA 530" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_M
-D SETA 1" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_MD SETA 1" --list=.
-\listings\principale.lst Principale.asm
+32F107VC -I.\RTE\_R_el -IC:\Programdata\Keil\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Co
+re\Include -IC:\Programdata\Keil\Arm\Packs\Keil\STM32F1xx_DFP\2.3.0\Device\Incl
+ude --predefine="__EVAL SETA 1" --predefine="__MICROLIB SETA 1" --predefine="__
+UVISION_VERSION SETA 530" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_CL 
+SETA 1" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_CL SETA 1" --list=.\l
+istings\principale.lst Principale.asm
 
 
 

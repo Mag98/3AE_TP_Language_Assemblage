@@ -17,6 +17,7 @@
 	EXPORT Tempo
 	EXPORT DriverReg
 	IMPORT DataSend
+	EXPORT DriverPile
 
 ;**************************************************************************
 
@@ -58,6 +59,7 @@ ValCourante DCW 1
 ;------------------------------------------------------------------------
 
 DriverGlobal PROC
+	PUSH{R1,R2,R3,R4,R0,R5,R6,R7,R8,R9,R10}
 	LDR R1, =GPIOBASEA 
 	;set(slck)
 	MOV R2, #(0x01 <<5)
@@ -68,14 +70,12 @@ DriverGlobal PROC
 	LDR R0, =ValCourante 
 	LDRH R5, [R0]
 	
-	;je mets lavaleur de Barrette1 dans R6
-	;LDR R0, =Barrette1
-	;LDRH R6, [R0]
+
 	
 FOR_48 	CMP R3, R4
 	BEQ END_FOR_48 
 	;LDRB R5, [R6,R3] 
-	;je mets lavaleur de Barrette1 dans R6
+	;je mets la valeur de Barrette1 dans R6
 	LDR R0, =Barrette3
 	LDRH R6, [R0]
 	LDRB R5, [R0,R3]
@@ -133,6 +133,7 @@ END_FOR_48
 	MOV R10, #0
 	STRH R10 , [R0]
 
+	POP{R1,R2,R3,R4,R0,R5,R6,R7,R8,R9,R10}
 	BX LR 
 	ENDP
 
@@ -147,7 +148,7 @@ END_FOR_48
 ;------------------------------------------------------------------------	
 
 Tempo PROC
-	PUSH{R0}
+	PUSH{R0,R2,R3,R5}
 	MOV R1, #0 
 	MOV R5, #10
 	MUL R0, R5
@@ -167,9 +168,10 @@ END_TWO
 	ADD R1, #1 
 	B FOR_ONE
 END_ONE
-	POP{R0}
+	POP{R0,R2,R3,R5}
 	BX LR
 	ENDP
+
 
 ;########################################################################
 ; Procédure DriverReg
@@ -182,6 +184,7 @@ END_ONE
 ;------------------------------------------------------------------------
 
 DriverReg PROC
+	PUSH{R1,R2,R3,R4,R0,R5,R6,R7,R8,R9,R10}
 	LDR R1, =GPIOBASEA 
 	;set(slck)
 	MOV R2, #(0x01 <<5)
@@ -194,11 +197,11 @@ DriverReg PROC
 	
 FOR_48_REG 
 	CMP R3, R4
-	BEQ END_FOR_48_REG  
-	;je mets la valeur de Barrette1 dans R6
+	BEQ END_FOR_48_REG 
 	
+	;je mets la valeur de Barrette1 dans R6
 	LDRH R6, [R11]
-	LDRB R5, [R0,R3]
+	LDRB R5, [R11,R3] 
 	LSL R5 , #24
 			
 	MOV R7, #0
@@ -253,11 +256,99 @@ END_FOR_48_REG
 	MOV R10, #0
 	STRH R10 , [R0]
 
+	POP{R1,R2,R3,R4,R0,R5,R6,R7,R8,R9,R10}
+	
 	BX LR 
 	ENDP
 
 
 
+;########################################################################
+; Procédure DriverPile
+;########################################################################
+;
+; Paramètre entrant  : Pile
+; Paramètre sortant  : ???
+; Variables globales : ???
+; Registres modifiés : ???
+;------------------------------------------------------------------------
+
+DriverPile PROC
+	PUSH{R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10}
+	LDR R1, =GPIOBASEA 
+	MOV R2, #(0x01 <<5)
+	STRH R2, [R1,#OffsetSet]
+	
+	MOV R3, #0 ; curseur de la boucle 
+	MOV R4, #48
+	LDR R0, =ValCourante 
+	LDRH R5, [R0]
+	
+FOR_48_PILE
+	CMP R3, R4
+	BEQ END_FOR_48_PILE
+	
+	;je mets la valeur de Barrette1 dans R6
+	LDRH R6, [R11]
+	LDRB R5, [R11,R3] 
+	LSL R5 , #24
+			
+	MOV R7, #0
+	MOV R8, #12
+	
+FOR_12_PILE
+ 	CMP R7,R8  
+	BEQ END_FOR_12_PILE
+	
+	;reset(sclk) 
+	MOV R2, #(0x01 << 5)
+	STRH R2, [R1,#OffsetReset]
+
+	;test de la condition sur le poids fort    
+	TST R5, #(0x01<<31)
+	BEQ ELSE_PILE
+
+
+IF_PILE
+	;set(sin)
+	MOV R9, #(0x01 << 7)
+	STRH R9, [R1, #OffsetSet]
+	B EndIf_PILE
+ 	
+ELSE_PILE	;reset sin
+	MOV R9, #(0x01 << 7)
+	STRH R9, [R1, #OffsetReset]
+	B EndIf_PILE
+
+EndIf_PILE
+	LSL R5, #1
+
+	;set(slck)
+	MOV R2, #(0x01 << 5)
+	STRH R2, [R1,#OffsetSet]
+
+	ADD R7, #1
+	B FOR_12_PILE
+END_FOR_12_PILE
+
+	ADD R3, #1 
+	B FOR_48_PILE
+END_FOR_48_PILE
+
+;reset(sclk) 
+	MOV R2, #(0x01 << 5)
+	STRH R2, [R1,#OffsetReset]
+
+	;dataSend = 0 
+	LDR R0, =DataSend
+	STRH R10, [R0]
+	MOV R10, #0
+	STRH R10 , [R0]
+
+	POP{R1,R2,R3,R4,R5,R6,R7,R8,R9,R10}
+	
+	BX LR 
+	ENDP
 
 	
 

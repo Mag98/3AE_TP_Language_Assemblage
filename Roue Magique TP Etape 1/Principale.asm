@@ -105,7 +105,7 @@ Si		LDRSH R3, [R6]
 Oui		TST R7, #(0x1 << 8) ;Si capteur = 1
 		BEQ Sortie ;Cas d'un front descendant
 
-T_Oui		TST R8, #(0x1 <<10) 
+T_Oui	TST R8, #(0x1 <<10) 
 		BEQ Eteinte ;La LED est eteinte
 
 Allume 	BL Eteint_LED

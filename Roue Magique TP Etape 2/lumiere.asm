@@ -45,7 +45,7 @@ Barrette1 	DCB 255,0,0
 			DCB 0,0,0
 			DCB 0,0,0
 			DCB 0,0,0
-			DCB 0,0,255
+			DCB 255,0,0
 
 Barrette2 	DCB 255,0,0
 			DCB 0,255,0

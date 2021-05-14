@@ -27,16 +27,17 @@ ARM Macro Assembler    Page 1
    17 00000000                 EXPORT           Tempo
    18 00000000                 EXPORT           DriverReg
    19 00000000                 IMPORT           DataSend
-   20 00000000         
-   21 00000000         ;*******************************************************
+   20 00000000                 EXPORT           DriverPile
+   21 00000000         
+   22 00000000         ;*******************************************************
                        *******************
-   22 00000000         
    23 00000000         
    24 00000000         
-   25 00000000         ;***************CONSTANTES******************************
+   25 00000000         
+   26 00000000         ;***************CONSTANTES******************************
                        *******************
-   26 00000000         
-   27 00000000                 include          REG_UTILES.inc
+   27 00000000         
+   28 00000000                 include          REG_UTILES.inc
     1 00000000         
     2 00000000         ;**************************************
     3 00000000         ;     Les adresess utiles  
@@ -62,13 +63,13 @@ ARM Macro Assembler    Page 1
    23 00000000         
    24 00000000 40010800 
                        GPIOBASEA
-                               EQU              0X40010800
 
 
 
 ARM Macro Assembler    Page 2 
 
 
+                               EQU              0X40010800
    25 00000000 40010C00 
                        GPIOBASEB
                                EQU              0X40010C00
@@ -127,302 +128,409 @@ ARM Macro Assembler    Page 2
    47 00000000 40000810 
                        TIM4_SR EQU              0x40000810
    48 00000000         
-   49 00000000         
 
 
 
 ARM Macro Assembler    Page 3 
 
 
+   49 00000000         
    50 00000000         
    51 00000000         
    52 00000000         
    53 00000000                 END
-   28 00000000         
-   29 00000000         ;*******************************************************
+   29 00000000         
+   30 00000000         ;*******************************************************
                        *******************
-   30 00000000         
    31 00000000         
-   32 00000000         ;***************VARIABLES*******************************
+   32 00000000         
+   33 00000000         ;***************VARIABLES*******************************
                        *******************
-   33 00000000                 AREA             MesDonnees, data, readwrite
-   34 00000000         ;*******************************************************
+   34 00000000                 AREA             MesDonnees, data, readwrite
+   35 00000000         ;*******************************************************
                        *******************
-   35 00000000 01 00   ValCourante
+   36 00000000 01 00   ValCourante
                                DCW              1
-   36 00000002         
    37 00000002         
-   38 00000002         ;*******************************************************
+   38 00000002         
+   39 00000002         ;*******************************************************
                        *******************
-   39 00000002         
    40 00000002         
    41 00000002         
-   42 00000002         ;***************CODE************************************
+   42 00000002         
+   43 00000002         ;***************CODE************************************
                        *******************
-   43 00000002                 AREA             moncode, code, readonly
-   44 00000000         ;*******************************************************
+   44 00000002                 AREA             moncode, code, readonly
+   45 00000000         ;*******************************************************
                        *******************
-   45 00000000         
    46 00000000         
    47 00000000         
    48 00000000         
    49 00000000         
-   50 00000000         ;#######################################################
+   50 00000000         
+   51 00000000         ;#######################################################
                        #################
-   51 00000000         ; Procédure ????
-   52 00000000         ;#######################################################
+   52 00000000         ; Procédure DriverGlobal
+   53 00000000         ;#######################################################
                        #################
-   53 00000000         ;
-   54 00000000         ; Paramètre entrant  : ???
-   55 00000000         ; Paramètre sortant  : ???
-   56 00000000         ; Variables globales : ???
-   57 00000000         ; Registres modifiés : ???
-   58 00000000         ;-------------------------------------------------------
+   54 00000000         ;
+   55 00000000         ; Paramètre entrant  : ???
+   56 00000000         ; Paramètre sortant  : ???
+   57 00000000         ; Variables globales : ???
+   58 00000000         ; Registres modifiés : ???
+   59 00000000         ;-------------------------------------------------------
                        -----------------
-   59 00000000         
-   60 00000000         DriverGlobal
+   60 00000000         
+   61 00000000         DriverGlobal
                                PROC
-   61 00000000 4948            LDR              R1, =GPIOBASEA
-   62 00000002         ;set(slck)
-   63 00000002 F04F 0220       MOV              R2, #(0x01 <<5)
-   64 00000006 820A            STRH             R2, [R1,#OffsetSet]
-   65 00000008         
-   66 00000008 F04F 0300       MOV              R3, #0      ; curseur de la bou
+   62 00000000 E92D 07FF       PUSH{R1,R2,R3,R4,R0,R5,R6,R7,R8,R9,R10}
+   63 00000004 496D            LDR              R1, =GPIOBASEA
+   64 00000006         ;set(slck)
+   65 00000006 F04F 0220       MOV              R2, #(0x01 <<5)
+   66 0000000A 820A            STRH             R2, [R1,#OffsetSet]
+   67 0000000C         
+   68 0000000C F04F 0300       MOV              R3, #0      ; curseur de la bou
                                                             cle 
-   67 0000000C F04F 0430       MOV              R4, #48
-   68 00000010 4845            LDR              R0, =ValCourante
-   69 00000012 8805            LDRH             R5, [R0]
-   70 00000014         
+   69 00000010 F04F 0430       MOV              R4, #48
+   70 00000014 486A            LDR              R0, =ValCourante
 
 
 
 ARM Macro Assembler    Page 4 
 
 
-   71 00000014         ;je mets lavaleur de Barrette1 dans R6
-   72 00000014         ;LDR R0, =Barrette1
-   73 00000014         ;LDRH R6, [R0]
-   74 00000014         
-   75 00000014 42A3    FOR_48  CMP              R3, R4
-   76 00000016 D025            BEQ              END_FOR_48
-   77 00000018         ;LDRB R5, [R6,R3] 
-   78 00000018         ;je mets lavaleur de Barrette1 dans R6
-   79 00000018 4844            LDR              R0, =Barrette3
-   80 0000001A 8806            LDRH             R6, [R0]
-   81 0000001C 5CC5            LDRB             R5, [R0,R3]
-   82 0000001E         ;MOV R6, #(0x01 << 24)
-   83 0000001E         ;LDR R5, [R4,R5]
-   84 0000001E EA4F 6505       LSL              R5 , #24
-   85 00000022         
-   86 00000022 F04F 0700       MOV              R7, #0
-   87 00000026 F04F 080C       MOV              R8, #12
-   88 0000002A         
-   89 0000002A 4547    FOR_12  CMP              R7,R8
-   90 0000002C D017            BEQ              END_FOR_12
-   91 0000002E         
-   92 0000002E         ;reset(sclk) 
-   93 0000002E F04F 0220       MOV              R2, #(0x01 << 5)
-   94 00000032 828A            STRH             R2, [R1,#OffsetReset]
-   95 00000034         
-   96 00000034         ;test de la condition sur le poids fort    
-   97 00000034 F015 4F00       TST              R5, #(0x01<<31)
-   98 00000038 D004            BEQ              ELSE
-   99 0000003A         
-  100 0000003A         
-  101 0000003A         IF
-  102 0000003A         ;set(sin)
-  103 0000003A F04F 0980       MOV              R9, #(0x01 << 7)
-  104 0000003E F8A1 9010       STRH             R9, [R1, #OffsetSet]
-  105 00000042 E004            B                EndIf
-  106 00000044         
-  107 00000044         ELSE                                 ;reset sin
-  108 00000044 F04F 0980       MOV              R9, #(0x01 << 7)
-  109 00000048 F8A1 9014       STRH             R9, [R1, #OffsetReset]
-  110 0000004C E7FF            B                EndIf
-  111 0000004E         
-  112 0000004E EA4F 0545 
+   71 00000016 8805            LDRH             R5, [R0]
+   72 00000018         
+   73 00000018         
+   74 00000018         
+   75 00000018 42A3    FOR_48  CMP              R3, R4
+   76 0000001A D025            BEQ              END_FOR_48
+   77 0000001C         ;LDRB R5, [R6,R3] 
+   78 0000001C         ;je mets la valeur de Barrette1 dans R6
+   79 0000001C 4869            LDR              R0, =Barrette3
+   80 0000001E 8806            LDRH             R6, [R0]
+   81 00000020 5CC5            LDRB             R5, [R0,R3]
+   82 00000022         ;MOV R6, #(0x01 << 24)
+   83 00000022         ;LDR R5, [R4,R5]
+   84 00000022 EA4F 6505       LSL              R5 , #24
+   85 00000026         
+   86 00000026 F04F 0700       MOV              R7, #0
+   87 0000002A F04F 080C       MOV              R8, #12
+   88 0000002E         
+   89 0000002E 4547    FOR_12  CMP              R7,R8
+   90 00000030 D017            BEQ              END_FOR_12
+   91 00000032         
+   92 00000032         ;reset(sclk) 
+   93 00000032 F04F 0220       MOV              R2, #(0x01 << 5)
+   94 00000036 828A            STRH             R2, [R1,#OffsetReset]
+   95 00000038         
+   96 00000038         ;test de la condition sur le poids fort    
+   97 00000038 F015 4F00       TST              R5, #(0x01<<31)
+   98 0000003C D004            BEQ              ELSE
+   99 0000003E         
+  100 0000003E         
+  101 0000003E         IF
+  102 0000003E         ;set(sin)
+  103 0000003E F04F 0980       MOV              R9, #(0x01 << 7)
+  104 00000042 F8A1 9010       STRH             R9, [R1, #OffsetSet]
+  105 00000046 E004            B                EndIf
+  106 00000048         
+  107 00000048         ELSE                                 ;reset sin
+  108 00000048 F04F 0980       MOV              R9, #(0x01 << 7)
+  109 0000004C F8A1 9014       STRH             R9, [R1, #OffsetReset]
+  110 00000050 E7FF            B                EndIf
+  111 00000052         
+  112 00000052 EA4F 0545 
                        EndIf   LSL              R5, #1
-  113 00000052         
-  114 00000052         ;set(slck)
-  115 00000052 F04F 0220       MOV              R2, #(0x01 << 5)
-  116 00000056 820A            STRH             R2, [R1,#OffsetSet]
-  117 00000058         
-  118 00000058 F107 0701       ADD              R7, #1
-  119 0000005C E7E5            B                FOR_12
-  120 0000005E         END_FOR_12
-  121 0000005E         
-  122 0000005E F103 0301       ADD              R3, #1
-  123 00000062 E7D7            B                FOR_48
-  124 00000064         END_FOR_48
-  125 00000064         
-  126 00000064         ;reset(sclk) 
-  127 00000064 F04F 0220       MOV              R2, #(0x01 << 5)
-  128 00000068 828A            STRH             R2, [R1,#OffsetReset]
+  113 00000056         
+  114 00000056         ;set(slck)
+  115 00000056 F04F 0220       MOV              R2, #(0x01 << 5)
+  116 0000005A 820A            STRH             R2, [R1,#OffsetSet]
+  117 0000005C         
+  118 0000005C F107 0701       ADD              R7, #1
+  119 00000060 E7E5            B                FOR_12
+  120 00000062         END_FOR_12
+  121 00000062         
+  122 00000062 F103 0301       ADD              R3, #1
+  123 00000066 E7D7            B                FOR_48
+  124 00000068         END_FOR_48
+  125 00000068         
+  126 00000068         ;reset(sclk) 
+  127 00000068 F04F 0220       MOV              R2, #(0x01 << 5)
+  128 0000006C 828A            STRH             R2, [R1,#OffsetReset]
 
 
 
 ARM Macro Assembler    Page 5 
 
 
-  129 0000006A         
-  130 0000006A         ;dataSend = 0 
-  131 0000006A 4831            LDR              R0, =DataSend
-  132 0000006C F8A0 A000       STRH             R10, [R0]
-  133 00000070 F04F 0A00       MOV              R10, #0
-  134 00000074 F8A0 A000       STRH             R10 , [R0]
-  135 00000078         
-  136 00000078 4770            BX               LR
-  137 0000007A                 ENDP
-  138 0000007A         
-  139 0000007A         ;#######################################################
+  129 0000006E         
+  130 0000006E         ;dataSend = 0 
+  131 0000006E 4856            LDR              R0, =DataSend
+  132 00000070 F8A0 A000       STRH             R10, [R0]
+  133 00000074 F04F 0A00       MOV              R10, #0
+  134 00000078 F8A0 A000       STRH             R10 , [R0]
+  135 0000007C         
+  136 0000007C E8BD 07FF       POP{R1,R2,R3,R4,R0,R5,R6,R7,R8,R9,R10}
+  137 00000080 4770            BX               LR
+  138 00000082                 ENDP
+  139 00000082         
+  140 00000082         ;#######################################################
                        #################
-  140 0000007A         ; Procédure ????
-  141 0000007A         ;#######################################################
+  141 00000082         ; Procédure Tempo
+  142 00000082         ;#######################################################
                        #################
-  142 0000007A         ;
-  143 0000007A         ; Paramètre entrant  : -
-  144 0000007A         ; Paramètre sortant  : -
-  145 0000007A         ; Variables globales : -
-  146 0000007A         ; Registres modifiés : R0
-  147 0000007A         ;-------------------------------------------------------
+  143 00000082         ;
+  144 00000082         ; Paramètre entrant  : -
+  145 00000082         ; Paramètre sortant  : -
+  146 00000082         ; Variables globales : -
+  147 00000082         ; Registres modifiés : R0
+  148 00000082         ;-------------------------------------------------------
                        ----------------- 
-  148 0000007A         
-  149 0000007A         Tempo   PROC
-  150 0000007A B401            PUSH{R0}
-  151 0000007C F04F 0100       MOV              R1, #0
-  152 00000080 F04F 050A       MOV              R5, #10
-  153 00000084 FB00 F005       MUL              R0, R5
-  154 00000088         
-  155 00000088 4281    FOR_ONE CMP              R1,R0
-  156 0000008A D00C            BEQ              END_ONE
-  157 0000008C         
-  158 0000008C F04F 0200       MOV              R2, #0
-  159 00000090 F240 53DC       MOV              R3, #1500
-  160 00000094         
-  161 00000094 429A    FOR_TWO CMP              R2,R3
-  162 00000096 D003            BEQ              END_TWO
-  163 00000098 BF00            NOP
-  164 0000009A F102 0201       ADD              R2, #1
-  165 0000009E E7F9            B                FOR_TWO
-  166 000000A0         END_TWO
-  167 000000A0 F101 0101       ADD              R1, #1
-  168 000000A4 E7F0            B                FOR_ONE
-  169 000000A6         END_ONE
-  170 000000A6 BC01            POP{R0}
-  171 000000A8 4770            BX               LR
-  172 000000AA                 ENDP
-  173 000000AA         
-  174 000000AA         ;#######################################################
+  149 00000082         
+  150 00000082         Tempo   PROC
+  151 00000082 B42D            PUSH{R0,R2,R3,R5}
+  152 00000084 F04F 0100       MOV              R1, #0
+  153 00000088 F04F 050A       MOV              R5, #10
+  154 0000008C FB00 F005       MUL              R0, R5
+  155 00000090         
+  156 00000090 4281    FOR_ONE CMP              R1,R0
+  157 00000092 D00C            BEQ              END_ONE
+  158 00000094         
+  159 00000094 F04F 0200       MOV              R2, #0
+  160 00000098 F240 53DC       MOV              R3, #1500
+  161 0000009C         
+  162 0000009C 429A    FOR_TWO CMP              R2,R3
+  163 0000009E D003            BEQ              END_TWO
+  164 000000A0 BF00            NOP
+  165 000000A2 F102 0201       ADD              R2, #1
+  166 000000A6 E7F9            B                FOR_TWO
+  167 000000A8         END_TWO
+  168 000000A8 F101 0101       ADD              R1, #1
+  169 000000AC E7F0            B                FOR_ONE
+  170 000000AE         END_ONE
+  171 000000AE BC2D            POP{R0,R2,R3,R5}
+  172 000000B0 4770            BX               LR
+  173 000000B2                 ENDP
+  174 000000B2         
+  175 000000B2         
+  176 000000B2         ;#######################################################
                        #################
-  175 000000AA         ; Procédure DriverReg
-  176 000000AA         ;#######################################################
+  177 000000B2         ; Procédure DriverReg
+  178 000000B2         ;#######################################################
                        #################
-  177 000000AA         ;
-  178 000000AA         ; Paramètre entrant  : R11
-  179 000000AA         ; Paramètre sortant  : ???
-  180 000000AA         ; Variables globales : ???
-  181 000000AA         ; Registres modifiés : ???
-  182 000000AA         ;-------------------------------------------------------
+  179 000000B2         ;
+  180 000000B2         ; Paramètre entrant  : R11
+  181 000000B2         ; Paramètre sortant  : ???
+  182 000000B2         ; Variables globales : ???
 
 
 
 ARM Macro Assembler    Page 6 
 
 
+  183 000000B2         ; Registres modifiés : ???
+  184 000000B2         ;-------------------------------------------------------
                        -----------------
-  183 000000AA         
-  184 000000AA         DriverReg
+  185 000000B2         
+  186 000000B2         DriverReg
                                PROC
-  185 000000AA 491E            LDR              R1, =GPIOBASEA
-  186 000000AC         ;set(slck)
-  187 000000AC F04F 0220       MOV              R2, #(0x01 <<5)
-  188 000000B0 820A            STRH             R2, [R1,#OffsetSet]
-  189 000000B2         
-  190 000000B2 F04F 0300       MOV              R3, #0      ; curseur de la bou
+  187 000000B2 E92D 07FF       PUSH{R1,R2,R3,R4,R0,R5,R6,R7,R8,R9,R10}
+  188 000000B6 4941            LDR              R1, =GPIOBASEA
+  189 000000B8         ;set(slck)
+  190 000000B8 F04F 0220       MOV              R2, #(0x01 <<5)
+  191 000000BC 820A            STRH             R2, [R1,#OffsetSet]
+  192 000000BE         
+  193 000000BE F04F 0300       MOV              R3, #0      ; curseur de la bou
                                                             cle 
-  191 000000B6 F04F 0430       MOV              R4, #48
-  192 000000BA 481B            LDR              R0, =ValCourante
-  193 000000BC 8805            LDRH             R5, [R0]
-  194 000000BE         
-  195 000000BE         FOR_48_REG
-  196 000000BE 42A3            CMP              R3, R4
-  197 000000C0 D025            BEQ              END_FOR_48_REG
-  198 000000C2         ;je mets la valeur de Barrette1 dans R6
-  199 000000C2         
-  200 000000C2 F8BB 6000       LDRH             R6, [R11]
-  201 000000C6 5CC5            LDRB             R5, [R0,R3]
-  202 000000C8 EA4F 6505       LSL              R5 , #24
-  203 000000CC         
-  204 000000CC F04F 0700       MOV              R7, #0
-  205 000000D0 F04F 080C       MOV              R8, #12
-  206 000000D4         
-  207 000000D4         FOR_12_REG
-  208 000000D4 4547            CMP              R7,R8
-  209 000000D6 D017            BEQ              END_FOR_12_REG
-  210 000000D8         
-  211 000000D8         ;reset(sclk) 
-  212 000000D8 F04F 0220       MOV              R2, #(0x01 << 5)
-  213 000000DC 828A            STRH             R2, [R1,#OffsetReset]
-  214 000000DE         
-  215 000000DE         ;test de la condition sur le poids fort    
-  216 000000DE F015 4F00       TST              R5, #(0x01<<31)
-  217 000000E2 D004            BEQ              ELSE_REG
-  218 000000E4         
-  219 000000E4         
-  220 000000E4         IF_REG
-  221 000000E4         ;set(sin)
-  222 000000E4 F04F 0980       MOV              R9, #(0x01 << 7)
-  223 000000E8 F8A1 9010       STRH             R9, [R1, #OffsetSet]
-  224 000000EC E004            B                EndIf_REG
-  225 000000EE         
-  226 000000EE         ELSE_REG                             ;reset sin
-  227 000000EE F04F 0980       MOV              R9, #(0x01 << 7)
-  228 000000F2 F8A1 9014       STRH             R9, [R1, #OffsetReset]
-  229 000000F6 E7FF            B                EndIf_REG
-  230 000000F8         
-  231 000000F8         EndIf_REG
-  232 000000F8 EA4F 0545       LSL              R5, #1
-  233 000000FC         
-  234 000000FC         ;set(slck)
-  235 000000FC F04F 0220       MOV              R2, #(0x01 << 5)
-  236 00000100 820A            STRH             R2, [R1,#OffsetSet]
-  237 00000102         
-  238 00000102 F107 0701       ADD              R7, #1
+  194 000000C2 F04F 0430       MOV              R4, #48
+  195 000000C6 483E            LDR              R0, =ValCourante
+  196 000000C8 8805            LDRH             R5, [R0]
+  197 000000CA         
+  198 000000CA         FOR_48_REG
+  199 000000CA 42A3            CMP              R3, R4
+  200 000000CC D026            BEQ              END_FOR_48_REG
+  201 000000CE         
+  202 000000CE         ;je mets la valeur de Barrette1 dans R6
+  203 000000CE F8BB 6000       LDRH             R6, [R11]
+  204 000000D2 F81B 5003       LDRB             R5, [R11,R3]
+  205 000000D6 EA4F 6505       LSL              R5 , #24
+  206 000000DA         
+  207 000000DA F04F 0700       MOV              R7, #0
+  208 000000DE F04F 080C       MOV              R8, #12
+  209 000000E2         
+  210 000000E2         FOR_12_REG
+  211 000000E2 4547            CMP              R7,R8
+  212 000000E4 D017            BEQ              END_FOR_12_REG
+  213 000000E6         
+  214 000000E6         ;reset(sclk) 
+  215 000000E6 F04F 0220       MOV              R2, #(0x01 << 5)
+  216 000000EA 828A            STRH             R2, [R1,#OffsetReset]
+  217 000000EC         
+  218 000000EC         ;test de la condition sur le poids fort    
+  219 000000EC F015 4F00       TST              R5, #(0x01<<31)
+  220 000000F0 D004            BEQ              ELSE_REG
+  221 000000F2         
+  222 000000F2         
+  223 000000F2         IF_REG
+  224 000000F2         ;set(sin)
+  225 000000F2 F04F 0980       MOV              R9, #(0x01 << 7)
+  226 000000F6 F8A1 9010       STRH             R9, [R1, #OffsetSet]
+  227 000000FA E004            B                EndIf_REG
+  228 000000FC         
+  229 000000FC         ELSE_REG                             ;reset sin
+  230 000000FC F04F 0980       MOV              R9, #(0x01 << 7)
+  231 00000100 F8A1 9014       STRH             R9, [R1, #OffsetReset]
+  232 00000104 E7FF            B                EndIf_REG
+  233 00000106         
+  234 00000106         EndIf_REG
+  235 00000106 EA4F 0545       LSL              R5, #1
+  236 0000010A         
+  237 0000010A         ;set(slck)
+  238 0000010A F04F 0220       MOV              R2, #(0x01 << 5)
 
 
 
 ARM Macro Assembler    Page 7 
 
 
-  239 00000106 E7E5            B                FOR_12_REG
-  240 00000108         END_FOR_12_REG
-  241 00000108         
-  242 00000108 F103 0301       ADD              R3, #1
-  243 0000010C E7D7            B                FOR_48_REG
-  244 0000010E         END_FOR_48_REG
-  245 0000010E         
-  246 0000010E         ;reset(sclk) 
-  247 0000010E F04F 0220       MOV              R2, #(0x01 << 5)
-  248 00000112 828A            STRH             R2, [R1,#OffsetReset]
-  249 00000114         
-  250 00000114         ;dataSend = 0 
-  251 00000114 4806            LDR              R0, =DataSend
-  252 00000116 F8A0 A000       STRH             R10, [R0]
-  253 0000011A F04F 0A00       MOV              R10, #0
-  254 0000011E F8A0 A000       STRH             R10 , [R0]
-  255 00000122         
-  256 00000122 4770            BX               LR
-  257 00000124                 ENDP
-  258 00000124         
-  259 00000124         
-  260 00000124         
-  261 00000124         
-  262 00000124         
-  263 00000124         
-  264 00000124         ;*******************************************************
+  239 0000010E 820A            STRH             R2, [R1,#OffsetSet]
+  240 00000110         
+  241 00000110 F107 0701       ADD              R7, #1
+  242 00000114 E7E5            B                FOR_12_REG
+  243 00000116         END_FOR_12_REG
+  244 00000116         
+  245 00000116 F103 0301       ADD              R3, #1
+  246 0000011A E7D6            B                FOR_48_REG
+  247 0000011C         END_FOR_48_REG
+  248 0000011C         
+  249 0000011C         ;reset(sclk) 
+  250 0000011C F04F 0220       MOV              R2, #(0x01 << 5)
+  251 00000120 828A            STRH             R2, [R1,#OffsetReset]
+  252 00000122         
+  253 00000122         ;dataSend = 0 
+  254 00000122 4829            LDR              R0, =DataSend
+  255 00000124 F8A0 A000       STRH             R10, [R0]
+  256 00000128 F04F 0A00       MOV              R10, #0
+  257 0000012C F8A0 A000       STRH             R10 , [R0]
+  258 00000130         
+  259 00000130 E8BD 07FF       POP{R1,R2,R3,R4,R0,R5,R6,R7,R8,R9,R10}
+  260 00000134         
+  261 00000134 4770            BX               LR
+  262 00000136                 ENDP
+  263 00000136         
+  264 00000136         
+  265 00000136         
+  266 00000136         ;#######################################################
+                       #################
+  267 00000136         ; Procédure DriverPile
+  268 00000136         ;#######################################################
+                       #################
+  269 00000136         ;
+  270 00000136         ; Paramètre entrant  : R11
+  271 00000136         ; Paramètre sortant  : ???
+  272 00000136         ; Variables globales : ???
+  273 00000136         ; Registres modifiés : ???
+  274 00000136         ;-------------------------------------------------------
+                       -----------------
+  275 00000136         
+  276 00000136         DriverPile
+                               PROC
+  277 00000136 E92D 07FF       PUSH{R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10}
+  278 0000013A 4920            LDR              R1, =GPIOBASEA
+  279 0000013C F04F 0220       MOV              R2, #(0x01 <<5)
+  280 00000140 820A            STRH             R2, [R1,#OffsetSet]
+  281 00000142         
+  282 00000142 F04F 0300       MOV              R3, #0      ; curseur de la bou
+                                                            cle 
+  283 00000146 F04F 0430       MOV              R4, #48
+  284 0000014A 481D            LDR              R0, =ValCourante
+  285 0000014C 8805            LDRH             R5, [R0]
+  286 0000014E         
+  287 0000014E         FOR_48_PILE
+  288 0000014E 42A3            CMP              R3, R4
+  289 00000150 D026            BEQ              END_FOR_48_PILE
+  290 00000152         
+  291 00000152         ;je mets la valeur de Barrette1 dans R6
+  292 00000152 F8BB 6000       LDRH             R6, [R11]
+
+
+
+ARM Macro Assembler    Page 8 
+
+
+  293 00000156 F81B 5003       LDRB             R5, [R11,R3]
+  294 0000015A EA4F 6505       LSL              R5 , #24
+  295 0000015E         
+  296 0000015E F04F 0700       MOV              R7, #0
+  297 00000162 F04F 080C       MOV              R8, #12
+  298 00000166         
+  299 00000166         FOR_12_PILE
+  300 00000166 4547            CMP              R7,R8
+  301 00000168 D017            BEQ              END_FOR_12_PILE
+  302 0000016A         
+  303 0000016A         ;reset(sclk) 
+  304 0000016A F04F 0220       MOV              R2, #(0x01 << 5)
+  305 0000016E 828A            STRH             R2, [R1,#OffsetReset]
+  306 00000170         
+  307 00000170         ;test de la condition sur le poids fort    
+  308 00000170 F015 4F00       TST              R5, #(0x01<<31)
+  309 00000174 D004            BEQ              ELSE_PILE
+  310 00000176         
+  311 00000176         
+  312 00000176         IF_PILE
+  313 00000176         ;set(sin)
+  314 00000176 F04F 0980       MOV              R9, #(0x01 << 7)
+  315 0000017A F8A1 9010       STRH             R9, [R1, #OffsetSet]
+  316 0000017E E004            B                EndIf_PILE
+  317 00000180         
+  318 00000180         ELSE_PILE                            ;reset sin
+  319 00000180 F04F 0980       MOV              R9, #(0x01 << 7)
+  320 00000184 F8A1 9014       STRH             R9, [R1, #OffsetReset]
+  321 00000188 E7FF            B                EndIf_PILE
+  322 0000018A         
+  323 0000018A         EndIf_PILE
+  324 0000018A EA4F 0545       LSL              R5, #1
+  325 0000018E         
+  326 0000018E         ;set(slck)
+  327 0000018E F04F 0220       MOV              R2, #(0x01 << 5)
+  328 00000192 820A            STRH             R2, [R1,#OffsetSet]
+  329 00000194         
+  330 00000194 F107 0701       ADD              R7, #1
+  331 00000198 E7E5            B                FOR_12_PILE
+  332 0000019A         END_FOR_12_PILE
+  333 0000019A         
+  334 0000019A F103 0301       ADD              R3, #1
+  335 0000019E E7D6            B                FOR_48_PILE
+  336 000001A0         END_FOR_48_PILE
+  337 000001A0         
+  338 000001A0         ;reset(sclk) 
+  339 000001A0 F04F 0220       MOV              R2, #(0x01 << 5)
+  340 000001A4 828A            STRH             R2, [R1,#OffsetReset]
+  341 000001A6         
+  342 000001A6         ;dataSend = 0 
+  343 000001A6 4808            LDR              R0, =DataSend
+  344 000001A8 F8A0 A000       STRH             R10, [R0]
+  345 000001AC F04F 0A00       MOV              R10, #0
+  346 000001B0 F8A0 A000       STRH             R10 , [R0]
+  347 000001B4         
+  348 000001B4 E8BD 07FE       POP{R1,R2,R3,R4,R5,R6,R7,R8,R9,R10}
+  349 000001B8         
+  350 000001B8 4770            BX               LR
+  351 000001BA                 ENDP
+
+
+
+ARM Macro Assembler    Page 9 
+
+
+  352 000001BA         
+  353 000001BA         
+  354 000001BA         
+  355 000001BA         ;*******************************************************
                        *******************
-  265 00000124                 END
-              40010800 
+  356 000001BA                 END
+              00 00 40010800 
               00000000 
               00000000 
               00000000 
@@ -444,7 +552,7 @@ MesDonnees 00000000
 
 Symbol: MesDonnees
    Definitions
-      At line 33 in file FonctionEtape.asm
+      At line 34 in file FonctionEtape.asm
    Uses
       None
 Comment: MesDonnees unused
@@ -452,10 +560,11 @@ ValCourante 00000000
 
 Symbol: ValCourante
    Definitions
-      At line 35 in file FonctionEtape.asm
+      At line 36 in file FonctionEtape.asm
    Uses
-      At line 68 in file FonctionEtape.asm
-      At line 192 in file FonctionEtape.asm
+      At line 70 in file FonctionEtape.asm
+      At line 195 in file FonctionEtape.asm
+      At line 284 in file FonctionEtape.asm
 
 2 symbols
 
@@ -468,19 +577,27 @@ DriverGlobal 00000000
 
 Symbol: DriverGlobal
    Definitions
-      At line 60 in file FonctionEtape.asm
+      At line 61 in file FonctionEtape.asm
    Uses
       At line 16 in file FonctionEtape.asm
 Comment: DriverGlobal used once
-DriverReg 000000AA
+DriverPile 00000136
+
+Symbol: DriverPile
+   Definitions
+      At line 276 in file FonctionEtape.asm
+   Uses
+      At line 20 in file FonctionEtape.asm
+Comment: DriverPile used once
+DriverReg 000000B2
 
 Symbol: DriverReg
    Definitions
-      At line 184 in file FonctionEtape.asm
+      At line 186 in file FonctionEtape.asm
    Uses
       At line 18 in file FonctionEtape.asm
 Comment: DriverReg used once
-ELSE 00000044
+ELSE 00000048
 
 Symbol: ELSE
    Definitions
@@ -488,15 +605,23 @@ Symbol: ELSE
    Uses
       At line 98 in file FonctionEtape.asm
 Comment: ELSE used once
-ELSE_REG 000000EE
+ELSE_PILE 00000180
+
+Symbol: ELSE_PILE
+   Definitions
+      At line 318 in file FonctionEtape.asm
+   Uses
+      At line 309 in file FonctionEtape.asm
+Comment: ELSE_PILE used once
+ELSE_REG 000000FC
 
 Symbol: ELSE_REG
    Definitions
-      At line 226 in file FonctionEtape.asm
+      At line 229 in file FonctionEtape.asm
    Uses
-      At line 217 in file FonctionEtape.asm
+      At line 220 in file FonctionEtape.asm
 Comment: ELSE_REG used once
-END_FOR_12 0000005E
+END_FOR_12 00000062
 
 Symbol: END_FOR_12
    Definitions
@@ -504,25 +629,9 @@ Symbol: END_FOR_12
    Uses
       At line 90 in file FonctionEtape.asm
 Comment: END_FOR_12 used once
-END_FOR_12_REG 00000108
+END_FOR_12_PILE 0000019A
 
-Symbol: END_FOR_12_REG
-   Definitions
-      At line 240 in file FonctionEtape.asm
-   Uses
-      At line 209 in file FonctionEtape.asm
-Comment: END_FOR_12_REG used once
-END_FOR_48 00000064
-
-Symbol: END_FOR_48
-   Definitions
-      At line 124 in file FonctionEtape.asm
-   Uses
-      At line 76 in file FonctionEtape.asm
-Comment: END_FOR_48 used once
-END_FOR_48_REG 0000010E
-
-Symbol: END_FOR_48_REG
+Symbol: END_FOR_12_PILE
 
 
 
@@ -530,45 +639,92 @@ ARM Macro Assembler    Page 2 Alphabetic symbol ordering
 Relocatable symbols
 
    Definitions
-      At line 244 in file FonctionEtape.asm
+      At line 332 in file FonctionEtape.asm
    Uses
-      At line 197 in file FonctionEtape.asm
+      At line 301 in file FonctionEtape.asm
+Comment: END_FOR_12_PILE used once
+END_FOR_12_REG 00000116
+
+Symbol: END_FOR_12_REG
+   Definitions
+      At line 243 in file FonctionEtape.asm
+   Uses
+      At line 212 in file FonctionEtape.asm
+Comment: END_FOR_12_REG used once
+END_FOR_48 00000068
+
+Symbol: END_FOR_48
+   Definitions
+      At line 124 in file FonctionEtape.asm
+   Uses
+      At line 76 in file FonctionEtape.asm
+Comment: END_FOR_48 used once
+END_FOR_48_PILE 000001A0
+
+Symbol: END_FOR_48_PILE
+   Definitions
+      At line 336 in file FonctionEtape.asm
+   Uses
+      At line 289 in file FonctionEtape.asm
+Comment: END_FOR_48_PILE used once
+END_FOR_48_REG 0000011C
+
+Symbol: END_FOR_48_REG
+   Definitions
+      At line 247 in file FonctionEtape.asm
+   Uses
+      At line 200 in file FonctionEtape.asm
 Comment: END_FOR_48_REG used once
-END_ONE 000000A6
+END_ONE 000000AE
 
 Symbol: END_ONE
    Definitions
-      At line 169 in file FonctionEtape.asm
+      At line 170 in file FonctionEtape.asm
    Uses
-      At line 156 in file FonctionEtape.asm
+      At line 157 in file FonctionEtape.asm
 Comment: END_ONE used once
-END_TWO 000000A0
+END_TWO 000000A8
 
 Symbol: END_TWO
    Definitions
-      At line 166 in file FonctionEtape.asm
+      At line 167 in file FonctionEtape.asm
    Uses
-      At line 162 in file FonctionEtape.asm
+      At line 163 in file FonctionEtape.asm
 Comment: END_TWO used once
-EndIf 0000004E
+EndIf 00000052
 
 Symbol: EndIf
    Definitions
       At line 112 in file FonctionEtape.asm
    Uses
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Relocatable symbols
+
       At line 105 in file FonctionEtape.asm
       At line 110 in file FonctionEtape.asm
 
-EndIf_REG 000000F8
+EndIf_PILE 0000018A
+
+Symbol: EndIf_PILE
+   Definitions
+      At line 323 in file FonctionEtape.asm
+   Uses
+      At line 316 in file FonctionEtape.asm
+      At line 321 in file FonctionEtape.asm
+
+EndIf_REG 00000106
 
 Symbol: EndIf_REG
    Definitions
-      At line 231 in file FonctionEtape.asm
+      At line 234 in file FonctionEtape.asm
    Uses
-      At line 224 in file FonctionEtape.asm
-      At line 229 in file FonctionEtape.asm
+      At line 227 in file FonctionEtape.asm
+      At line 232 in file FonctionEtape.asm
 
-FOR_12 0000002A
+FOR_12 0000002E
 
 Symbol: FOR_12
    Definitions
@@ -576,53 +732,69 @@ Symbol: FOR_12
    Uses
       At line 119 in file FonctionEtape.asm
 Comment: FOR_12 used once
-FOR_12_REG 000000D4
+FOR_12_PILE 00000166
+
+Symbol: FOR_12_PILE
+   Definitions
+      At line 299 in file FonctionEtape.asm
+   Uses
+      At line 331 in file FonctionEtape.asm
+Comment: FOR_12_PILE used once
+FOR_12_REG 000000E2
 
 Symbol: FOR_12_REG
    Definitions
-      At line 207 in file FonctionEtape.asm
+      At line 210 in file FonctionEtape.asm
    Uses
-      At line 239 in file FonctionEtape.asm
+      At line 242 in file FonctionEtape.asm
 Comment: FOR_12_REG used once
-FOR_48 00000014
+FOR_48 00000018
 
 Symbol: FOR_48
    Definitions
-
-
-
-ARM Macro Assembler    Page 3 Alphabetic symbol ordering
-Relocatable symbols
-
       At line 75 in file FonctionEtape.asm
    Uses
       At line 123 in file FonctionEtape.asm
 Comment: FOR_48 used once
-FOR_48_REG 000000BE
+FOR_48_PILE 0000014E
+
+Symbol: FOR_48_PILE
+   Definitions
+      At line 287 in file FonctionEtape.asm
+   Uses
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 335 in file FonctionEtape.asm
+Comment: FOR_48_PILE used once
+FOR_48_REG 000000CA
 
 Symbol: FOR_48_REG
    Definitions
-      At line 195 in file FonctionEtape.asm
+      At line 198 in file FonctionEtape.asm
    Uses
-      At line 243 in file FonctionEtape.asm
+      At line 246 in file FonctionEtape.asm
 Comment: FOR_48_REG used once
-FOR_ONE 00000088
+FOR_ONE 00000090
 
 Symbol: FOR_ONE
    Definitions
-      At line 155 in file FonctionEtape.asm
+      At line 156 in file FonctionEtape.asm
    Uses
-      At line 168 in file FonctionEtape.asm
+      At line 169 in file FonctionEtape.asm
 Comment: FOR_ONE used once
-FOR_TWO 00000094
+FOR_TWO 0000009C
 
 Symbol: FOR_TWO
    Definitions
-      At line 161 in file FonctionEtape.asm
+      At line 162 in file FonctionEtape.asm
    Uses
-      At line 165 in file FonctionEtape.asm
+      At line 166 in file FonctionEtape.asm
 Comment: FOR_TWO used once
-IF 0000003A
+IF 0000003E
 
 Symbol: IF
    Definitions
@@ -630,37 +802,45 @@ Symbol: IF
    Uses
       None
 Comment: IF unused
-IF_REG 000000E4
+IF_PILE 00000176
+
+Symbol: IF_PILE
+   Definitions
+      At line 312 in file FonctionEtape.asm
+   Uses
+      None
+Comment: IF_PILE unused
+IF_REG 000000F2
 
 Symbol: IF_REG
    Definitions
-      At line 220 in file FonctionEtape.asm
+      At line 223 in file FonctionEtape.asm
    Uses
       None
 Comment: IF_REG unused
-Tempo 0000007A
+Tempo 00000082
 
 Symbol: Tempo
    Definitions
-      At line 149 in file FonctionEtape.asm
+      At line 150 in file FonctionEtape.asm
    Uses
       At line 17 in file FonctionEtape.asm
 Comment: Tempo used once
 moncode 00000000
 
-Symbol: moncode
-   Definitions
-      At line 43 in file FonctionEtape.asm
-   Uses
-      None
 
 
-
-ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
 Relocatable symbols
 
+
+Symbol: moncode
+   Definitions
+      At line 44 in file FonctionEtape.asm
+   Uses
+      None
 Comment: moncode unused
-22 symbols
+30 symbols
 
 
 
@@ -673,8 +853,9 @@ Symbol: GPIOBASEA
    Definitions
       At line 24 in file REG_UTILES.inc
    Uses
-      At line 61 in file FonctionEtape.asm
-      At line 185 in file FonctionEtape.asm
+      At line 63 in file FonctionEtape.asm
+      At line 188 in file FonctionEtape.asm
+      At line 278 in file FonctionEtape.asm
 
 GPIOBASEB 40010C00
 
@@ -728,9 +909,9 @@ MaskSerial_In1 00000080
 
 
 
-
 ARM Macro Assembler    Page 2 Alphabetic symbol ordering
 Absolute symbols
+
 
 Symbol: MaskSerial_In1
    Definitions
@@ -779,28 +960,34 @@ Symbol: OffsetReset
       At line 94 in file FonctionEtape.asm
       At line 109 in file FonctionEtape.asm
       At line 128 in file FonctionEtape.asm
-      At line 213 in file FonctionEtape.asm
-      At line 228 in file FonctionEtape.asm
-      At line 248 in file FonctionEtape.asm
+      At line 216 in file FonctionEtape.asm
+      At line 231 in file FonctionEtape.asm
+      At line 251 in file FonctionEtape.asm
+      At line 305 in file FonctionEtape.asm
+      At line 320 in file FonctionEtape.asm
+      At line 340 in file FonctionEtape.asm
 
 OffsetSet 00000010
 
 Symbol: OffsetSet
    Definitions
-      At line 29 in file REG_UTILES.inc
-   Uses
-      At line 64 in file FonctionEtape.asm
-      At line 104 in file FonctionEtape.asm
 
 
 
 ARM Macro Assembler    Page 3 Alphabetic symbol ordering
 Absolute symbols
 
+      At line 29 in file REG_UTILES.inc
+   Uses
+      At line 66 in file FonctionEtape.asm
+      At line 104 in file FonctionEtape.asm
       At line 116 in file FonctionEtape.asm
-      At line 188 in file FonctionEtape.asm
-      At line 223 in file FonctionEtape.asm
-      At line 236 in file FonctionEtape.asm
+      At line 191 in file FonctionEtape.asm
+      At line 226 in file FonctionEtape.asm
+      At line 239 in file FonctionEtape.asm
+      At line 280 in file FonctionEtape.asm
+      At line 315 in file FonctionEtape.asm
+      At line 328 in file FonctionEtape.asm
 
 SCB_VTOR E000ED08
 
@@ -872,7 +1059,8 @@ Symbol: DataSend
       At line 19 in file FonctionEtape.asm
    Uses
       At line 131 in file FonctionEtape.asm
-      At line 251 in file FonctionEtape.asm
+      At line 254 in file FonctionEtape.asm
+      At line 343 in file FonctionEtape.asm
 
 3 symbols
-383 symbols in table
+391 symbols in table
